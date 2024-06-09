@@ -26,7 +26,7 @@ public class ArtistController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/save/")
+    @PostMapping("/save")
     public ResponseEntity<ArtistDTO> createArtist(@RequestBody ArtistDTO artistDTO) throws Exception {
         return this.artistService.saveArtist(artistDTO)
                 .map(artist -> ResponseEntity.ok().body(artistDTO))
@@ -36,5 +36,12 @@ public class ArtistController {
     @GetMapping("/macedonians")
     public List<ArtistDTO> getMacedonianArtist() {
         return this.artistService.getMacedonianArtists();
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ArtistDTO> deleteArtist(@PathVariable Long id) {
+        return this.artistService.deleteArtistById(id)
+                .map(a -> ResponseEntity.ok().body(a))
+                .orElseGet(()->ResponseEntity.badRequest().build());
     }
 }

@@ -19,4 +19,6 @@ public interface ArtistService {
     List<ArtistDTO> getMacedonianArtists();
 
     Optional<ArtistDTO> getSpecifiedArtist(Long id);
+
+    Optional<ArtistDTO> deleteArtistById(Long id);
 }

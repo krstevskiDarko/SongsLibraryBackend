@@ -1,11 +1,10 @@
 package mk.codeit.songslibrary.Service.Implementations;
 
+import jakarta.persistence.Tuple;
 import mk.codeit.songslibrary.Model.Artist;
 import mk.codeit.songslibrary.Model.DTO.PlaylistDTO;
-import mk.codeit.songslibrary.Model.Exceptions.InvalidArtistIdException;
-import mk.codeit.songslibrary.Model.Exceptions.InvalidPlaylistIdException;
-import mk.codeit.songslibrary.Model.Exceptions.InvalidSongIdException;
-import mk.codeit.songslibrary.Model.Exceptions.PlaylistWithNoSongsException;
+import mk.codeit.songslibrary.Model.DTO.SongDTO;
+import mk.codeit.songslibrary.Model.Exceptions.*;
 import mk.codeit.songslibrary.Model.Playlist;
 import mk.codeit.songslibrary.Model.Song;
 import mk.codeit.songslibrary.Repository.ArtistRepository;
@@ -15,6 +14,7 @@ import mk.codeit.songslibrary.Service.PlaylistService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,16 +41,10 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Override
     public Optional<PlaylistDTO> savePlaylist(PlaylistDTO playlist) {
 
-        if (playlist.getSongs() == null || playlist.getSongs().isEmpty()) {
-            throw new PlaylistWithNoSongsException();
+        if (playlist.getName() == null || playlist.getName().isEmpty()
+            || playlist.getStatusPublic() == null || playlist.getDateCreated() == null) {
+            throw new InvalidArgumentsException();
         }
-
-        List<Song> songs = playlist.getSongs().stream()
-                .map(songRepository::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
-
 
         Playlist p = new Playlist(
                 playlist.getName(),
@@ -58,11 +52,7 @@ public class PlaylistServiceImpl implements PlaylistService {
                 playlist.getStatusPublic(),
                 new ArrayList<>()
         );
-
-        songs.forEach(p::addSong);
-
         this.playlistRepository.save(p);
-
 
         return Optional.of(playlist);
     }
@@ -73,10 +63,21 @@ public class PlaylistServiceImpl implements PlaylistService {
 
         Playlist p = this.playlistRepository.findById(playlistId).orElseThrow(()-> new InvalidPlaylistIdException(playlistId));
 
-        p.getSongs().add(song);
+        List<Song> songs = p.getSongs();
+
+        Optional<Song> song1 = songs.stream()
+                .filter(r -> r.getId().equals(song.getId()))
+                .findFirst();
+
+        if(song1.isPresent()) {
+            throw new SongAlreadyInPlaylist();
+        }
+
+        songs.add(song);
         this.playlistRepository.save(p);
 
         PlaylistDTO pDTO = new PlaylistDTO(
+                p.getId(),
                 p.getName(),
                 p.getDateCreated(),
                 p.getStatusPublic(),
@@ -91,7 +92,8 @@ public class PlaylistServiceImpl implements PlaylistService {
     public List<PlaylistDTO> getPlaylistWithSongsByArtist(Long artistId) {
         Artist artist = this.artistRepository.findById(artistId).orElseThrow(() -> new InvalidArtistIdException(artistId));
 
-        List<Playlist> playlists =  this.playlistRepository.findPlaylistsWithSongsByArtist(artist);
+        List<Playlist> playlists =  this.playlistRepository.findPlaylistsWithSongsByArtist(artist)
+                .stream().map(tuple ->(Playlist) tuple.get(0)).distinct().toList();
 
         return getPlaylistDTOS(playlists);
     }
@@ -106,6 +108,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         List<PlaylistDTO> playlistDTOS = new ArrayList<>();
         for (Playlist playlist : playlists) {
             playlistDTOS.add(new PlaylistDTO(
+                    playlist.getId(),
                     playlist.getName(),
                     playlist.getDateCreated(),
                     playlist.getStatusPublic(),

@@ -15,20 +15,23 @@ public class Song {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false)
     private Integer durationInMinutes;
 
+    @Column(nullable = false)
     private LocalDate releaseDate;
 
     @Enumerated(EnumType.STRING)
     private Genre genre;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "artist_id")
     private Artist artist;
 
-    @ManyToMany(mappedBy = "songs")
+    @ManyToMany(mappedBy = "songs", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     private List<Playlist> playlists;
 
     public Song() {}
@@ -48,11 +51,6 @@ public class Song {
         this.artist = artist;
         this.genre = genre;
         this.playlists = playlists;
-    }
-
-    public void addPlaylist(Playlist playlist) {
-        this.playlists.add(playlist);
-        playlist.getSongs().add(this);
     }
 
 }

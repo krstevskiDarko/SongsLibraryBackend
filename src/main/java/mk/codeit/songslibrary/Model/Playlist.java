@@ -19,13 +19,16 @@ public class Playlist {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private LocalDate dateCreated;
 
+    @Column(nullable = false)
     private Boolean statusPublic;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(
             name = "song_playlist",
             joinColumns = @JoinColumn(name = "playlist_id"),
@@ -42,8 +45,4 @@ public class Playlist {
         this.songs = songs;
     }
 
-    public void addSong(Song song) {
-        this.songs.add(song);
-        song.getPlaylists().add(this);
-    }
 }

@@ -2,8 +2,10 @@ package mk.codeit.songslibrary.Service.Implementations;
 
 import mk.codeit.songslibrary.Model.Artist;
 import mk.codeit.songslibrary.Model.DTO.ArtistDTO;
+import mk.codeit.songslibrary.Model.DTO.SongDTO;
 import mk.codeit.songslibrary.Model.Exceptions.InvalidArgumentsException;
 import mk.codeit.songslibrary.Model.Exceptions.InvalidArtistIdException;
+import mk.codeit.songslibrary.Model.Playlist;
 import mk.codeit.songslibrary.Model.Song;
 import mk.codeit.songslibrary.Repository.ArtistRepository;
 import mk.codeit.songslibrary.Repository.SongRepository;
@@ -11,10 +13,7 @@ import mk.codeit.songslibrary.Service.ArtistService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -85,8 +84,30 @@ public class ArtistServiceImpl implements ArtistService {
                     .map(Song::getReleaseDate)
                     .toList();
 
-            return Optional.of(new ArtistDTO(a.getId(),a.getName(), a.getArtisticName(), a.getNationality(), a.getDateOfBirth(), songTitles, songDates));
+            List<SongDTO> songDTOS = new ArrayList<>();
+            for(Song s: songs){
+                songDTOS.add(new SongDTO(s.getTitle(), s.getReleaseDate()));
+            }
+
+            return Optional.of(new ArtistDTO(a.getId(),a.getName(), a.getArtisticName(), a.getNationality(), a.getDateOfBirth(), songDTOS));
         }
+
+    @Override
+    public Optional<ArtistDTO> deleteArtistById(Long id) {
+        Artist artist  = this.artistRepository.findById(id)
+                .orElseThrow(()-> new InvalidArtistIdException(id));
+
+        for(Song song : artist.getSongs()){
+            song.setArtist(null);
+            for(Playlist playlist : song.getPlaylists()){
+                playlist.getSongs().remove(song);
+            }
+        }
+
+        this.artistRepository.deleteById(id);
+
+        return Optional.of(new ArtistDTO(artist.getName(),artist.getArtisticName()));
+    }
 
 
 }

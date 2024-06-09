@@ -13,12 +13,13 @@ import java.util.List;
 @Repository
 public interface SongRepository extends JpaRepository<Song,Long> {
 
-    @Query(" SELECT s " +
+    @Query(" SELECT DISTINCT s " +
             "FROM Song s " +
             "WHERE s.artist = (:artist) and s.genre = (:genre) and s.durationInMinutes = (" +
             "  SELECT MAX(s2.durationInMinutes) FROM Song s2 " +
-            "  WHERE s2.artist = :artist AND s2.genre = :genre" +
-            ")")
+            "  WHERE s2.artist = :artist AND s2.genre = :genre)" +
+            "ORDER BY s.id " +
+            "LIMIT 1")
     Song findSongByLongestDuration(@Param ("artist") Artist a, @Param ("genre")Genre genre);
 
     @Query(" SELECT s " +

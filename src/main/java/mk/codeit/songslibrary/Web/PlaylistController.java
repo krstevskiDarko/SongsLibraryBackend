@@ -1,7 +1,9 @@
 package mk.codeit.songslibrary.Web;
 
 import mk.codeit.songslibrary.Model.DTO.PlaylistDTO;
+import mk.codeit.songslibrary.Model.Exceptions.SongAlreadyInPlaylist;
 import mk.codeit.songslibrary.Model.Playlist;
+import mk.codeit.songslibrary.Model.Song;
 import mk.codeit.songslibrary.Service.PlaylistService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +21,7 @@ public class PlaylistController {
         this.playlistService = playlistService;
     }
 
-    @PostMapping("/save/")
+    @PostMapping("/save")
     public ResponseEntity<PlaylistDTO> createPlaylist(@RequestBody PlaylistDTO playlist) {
         return this.playlistService.savePlaylist(playlist)
                 .map(p -> ResponseEntity.ok().body(p))
@@ -27,7 +29,7 @@ public class PlaylistController {
     }
 
     @GetMapping("/artist/{id}")
-    public List<PlaylistDTO> getPlaylistById(@PathVariable Long id) {
+    public List<PlaylistDTO> getPlaylistByArtistId(@PathVariable Long id) {
         return this.playlistService.getPlaylistWithSongsByArtist(id);
 
     }
@@ -53,7 +55,7 @@ public class PlaylistController {
     }
 
     @PostMapping("/add/{id}")
-    public ResponseEntity<PlaylistDTO> addSongToPlaylist(@PathVariable Long id, @RequestParam Long songId) {
+    public ResponseEntity<PlaylistDTO> addSongToPlaylist(@PathVariable Long id, @RequestParam Long songId){
         return this.playlistService.addSongToPlaylist(id,songId)
                 .map(p -> ResponseEntity.ok().body(p))
                 .orElseGet(() -> ResponseEntity.badRequest().build());

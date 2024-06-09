@@ -42,6 +42,7 @@ public class SongServiceImpl implements SongService {
         Artist artist = artistRepository.findById(artistId)
                 .orElseThrow(() -> new InvalidArtistIdException(artistId));
 
+        songDTO.setArtist(artistId);
 
         this.songRepository.save(new Song(
                 songDTO.getTitle(),
