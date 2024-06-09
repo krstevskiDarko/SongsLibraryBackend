@@ -16,15 +16,19 @@ public class Artist {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String artisticName;
 
+    @Column(nullable = false)
     private LocalDate dateOfBirth;
 
+    @Column(nullable = false)
     private String nationality;
 
-    @OneToMany(mappedBy = "artist")
+    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL)
     private List<Song> songs = new ArrayList<>();
 
     public Artist() {}

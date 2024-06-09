@@ -1,6 +1,7 @@
 package mk.codeit.songslibrary.Web.ExceptionHandler;
 
 import mk.codeit.songslibrary.Model.Exceptions.*;
+import mk.codeit.songslibrary.Model.Song;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -29,8 +30,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-    @ExceptionHandler(PlaylistWithNoSongsException.class)
-    public ResponseEntity<String> handlePlaylistWithNoSongsException(PlaylistWithNoSongsException ex) {
+    @ExceptionHandler(SongAlreadyInPlaylist.class)
+    public ResponseEntity<String> handleSongAlreadyInPlaylistException(SongAlreadyInPlaylist ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(SongsNotExisting.class)
+    public ResponseEntity<String> handleSongsNotExistingForPlaylist(SongsNotExisting ex){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }

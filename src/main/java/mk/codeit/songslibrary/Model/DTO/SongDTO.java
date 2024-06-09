@@ -28,7 +28,9 @@ public class SongDTO {
         this.releaseDate = releaseDate;
     }
 
-    public SongDTO() {}
-
+    public SongDTO(String title, LocalDate releaseDate) {
+        this.title = title;
+        this.releaseDate = releaseDate;
+    }
 
 }
