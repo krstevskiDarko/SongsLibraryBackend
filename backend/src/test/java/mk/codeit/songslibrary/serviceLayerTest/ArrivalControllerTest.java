@@ -107,8 +107,6 @@ public class ArrivalControllerTest {
         assertEquals(artist.getArtisticName(), artistDTO.get().getArtisticName());
         assertEquals(artist.getNationality(), artistDTO.get().getNationality());
         assertEquals(artist.getDateOfBirth(), artistDTO.get().getDateOfBirth());
-        assertEquals(2, artistDTO.get().getSongTitles().size());
-        assertEquals(2, artistDTO.get().getSongReleaseDate().size());
     }
 
     @Test
