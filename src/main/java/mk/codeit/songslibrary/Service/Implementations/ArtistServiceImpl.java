@@ -1,5 +1,6 @@
 package mk.codeit.songslibrary.Service.Implementations;
 
+import jakarta.transaction.Transactional;
 import mk.codeit.songslibrary.Model.Artist;
 import mk.codeit.songslibrary.Model.DTO.ArtistDTO;
 import mk.codeit.songslibrary.Model.DTO.SongDTO;
@@ -12,9 +13,9 @@ import mk.codeit.songslibrary.Repository.SongRepository;
 import mk.codeit.songslibrary.Service.ArtistService;
 import org.springframework.stereotype.Service;
 
+import java.beans.Transient;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ArtistServiceImpl implements ArtistService {
@@ -28,8 +29,21 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
-    public List<Artist> getAllArtists() {
-        return this.artistRepository.findAll();
+    public List<ArtistDTO> getAllArtists() {
+        List<Artist> artists = artistRepository.findAll();
+        List<ArtistDTO> artistDTOS = new ArrayList<>();
+
+        for (Artist artist : artists) {
+            artistDTOS.add(new ArtistDTO(
+                    artist.getId(),
+                    artist.getName(),
+                    artist.getArtisticName(),
+                    artist.getNationality(),
+                    artist.getDateOfBirth(),
+                    artist.getSongs().stream().map(Song::getId).toList()
+            ));
+        }
+        return artistDTOS;
     }
 
     @Override
@@ -43,7 +57,8 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
-    public Optional<Artist> saveArtist(ArtistDTO artist) {
+    @Transactional
+    public Optional<ArtistDTO> saveArtist(ArtistDTO artist) {
         if(artist == null || artist.getName() == null || artist.getName().isEmpty() || artist.getArtisticName() == null || artist.getArtisticName().isEmpty()
                || artist.getNationality() == null || artist.getNationality().isEmpty() || artist.getDateOfBirth() == null
         ){
@@ -56,14 +71,15 @@ public class ArtistServiceImpl implements ArtistService {
                 artist.getDateOfBirth(),
                 artist.getNationality()
         ));
-        return Optional.of(a);
+        artist.setId(a.getId());
+        return Optional.of(artist);
     }
 
     @Override
     public List<ArtistDTO> getMacedonianArtists() {
         List<Artist> artists = this.artistRepository.findArtistFromMacedoniaAndBornBefore1999();
 
-        return artists.stream().map(a -> new ArtistDTO(a.getName(), a.getArtisticName())).toList();
+        return artists.stream().map(a -> new ArtistDTO(a.getId(), a.getName(), a.getArtisticName())).toList();
     }
 
         @Override
@@ -84,12 +100,8 @@ public class ArtistServiceImpl implements ArtistService {
                     .map(Song::getReleaseDate)
                     .toList();
 
-            List<SongDTO> songDTOS = new ArrayList<>();
-            for(Song s: songs){
-                songDTOS.add(new SongDTO(s.getTitle(), s.getReleaseDate()));
-            }
 
-            return Optional.of(new ArtistDTO(a.getId(),a.getName(), a.getArtisticName(), a.getNationality(), a.getDateOfBirth(), songDTOS));
+            return Optional.of(new ArtistDTO(a.getId(),a.getName(),a.getArtisticName(),a.getNationality(),a.getDateOfBirth(),songTitles,songDates));
         }
 
     @Override
@@ -106,7 +118,7 @@ public class ArtistServiceImpl implements ArtistService {
 
         this.artistRepository.deleteById(id);
 
-        return Optional.of(new ArtistDTO(artist.getName(),artist.getArtisticName()));
+        return Optional.of(new ArtistDTO(artist.getId(), artist.getName(),artist.getArtisticName()));
     }
 
 

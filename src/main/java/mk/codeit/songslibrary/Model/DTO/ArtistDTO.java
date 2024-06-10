@@ -1,6 +1,7 @@
 package mk.codeit.songslibrary.Model.DTO;
 
 import lombok.Data;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 
@@ -15,19 +16,21 @@ public class ArtistDTO {
     private String nationality;
     private List<Long> songs;
 
-    private List<SongDTO> songDTOS;
+    private List<String> songTitles;
+    private List<LocalDate> songDates;
 
-    public ArtistDTO (Long id,String name, String artisticName, String nationality, LocalDate dateOfBirth, List<SongDTO> songDTOS) {
+    public ArtistDTO (Long id,String name, String artisticName, String nationality, LocalDate dateOfBirth, List<Long> songsIds) {
         this.id = id;
         this.name = name;
         this.artisticName = artisticName;
         this.nationality = nationality;
         this.dateOfBirth = dateOfBirth;
-        this.songDTOS = songDTOS;
+        this.songs = songsIds;
     }
     public ArtistDTO(){}
 
-    public ArtistDTO(String name, String artisticName) {
+    public ArtistDTO(Long id, String name, String artisticName) {
+        this.id = id;
         this.name = name;
         this.artisticName = artisticName;
     }
@@ -40,4 +43,13 @@ public class ArtistDTO {
         this.nationality = macedonian;
     }
 
+    public ArtistDTO(Long id, String name, String artisticName, String nationality, LocalDate dateOfBirth, List<String> songTitles, List<LocalDate> songDates) {
+        this.id = id;
+        this.name = name;
+        this.artisticName = artisticName;
+        this.nationality = nationality;
+        this.dateOfBirth = dateOfBirth;
+        this.songTitles=songTitles;
+        this.songDates=songDates;
+    }
 }

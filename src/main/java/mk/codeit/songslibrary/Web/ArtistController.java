@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin("http://localhost:3000")
 @RequestMapping("/api/artist")
 public class ArtistController {
 
@@ -17,6 +18,11 @@ public class ArtistController {
 
     public ArtistController(ArtistService artistService) {
         this.artistService = artistService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ArtistDTO>> getAllArtists() {
+        return ResponseEntity.ok(this.artistService.getAllArtists());
     }
 
     @GetMapping("/{id}")
@@ -29,7 +35,7 @@ public class ArtistController {
     @PostMapping("/save")
     public ResponseEntity<ArtistDTO> createArtist(@RequestBody ArtistDTO artistDTO) throws Exception {
         return this.artistService.saveArtist(artistDTO)
-                .map(artist -> ResponseEntity.ok().body(artistDTO))
+                .map(artist -> ResponseEntity.ok().body(artist))
                 .orElseGet(()->ResponseEntity.badRequest().build());
     }
 

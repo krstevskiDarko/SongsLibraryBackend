@@ -26,7 +26,6 @@ public class PlaylistServiceImpl implements PlaylistService {
     private final ArtistRepository artistRepository;
 
 
-
     public PlaylistServiceImpl(PlaylistRepository playlistRepository, SongRepository songRepository, ArtistRepository artistRepository) {
         this.playlistRepository = playlistRepository;
         this.songRepository = songRepository;
@@ -39,10 +38,16 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
     @Override
+    public List<PlaylistDTO> getAllPlaylists() {
+        List<Playlist> playlists = this.playlistRepository.findAll();
+        return getPlaylistDTOS(playlists);
+    }
+
+    @Override
     public Optional<PlaylistDTO> savePlaylist(PlaylistDTO playlist) {
 
         if (playlist.getName() == null || playlist.getName().isEmpty()
-            || playlist.getStatusPublic() == null || playlist.getDateCreated() == null) {
+                || playlist.getStatusPublic() == null || playlist.getDateCreated() == null) {
             throw new InvalidArgumentsException();
         }
 
@@ -61,7 +66,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     public Optional<PlaylistDTO> addSongToPlaylist(Long playlistId, Long songId) {
         Song song = this.songRepository.findById(songId).orElseThrow(() -> new InvalidSongIdException(songId));
 
-        Playlist p = this.playlistRepository.findById(playlistId).orElseThrow(()-> new InvalidPlaylistIdException(playlistId));
+        Playlist p = this.playlistRepository.findById(playlistId).orElseThrow(() -> new InvalidPlaylistIdException(playlistId));
 
         List<Song> songs = p.getSongs();
 
@@ -69,7 +74,7 @@ public class PlaylistServiceImpl implements PlaylistService {
                 .filter(r -> r.getId().equals(song.getId()))
                 .findFirst();
 
-        if(song1.isPresent()) {
+        if (song1.isPresent()) {
             throw new SongAlreadyInPlaylist();
         }
 
@@ -92,8 +97,8 @@ public class PlaylistServiceImpl implements PlaylistService {
     public List<PlaylistDTO> getPlaylistWithSongsByArtist(Long artistId) {
         Artist artist = this.artistRepository.findById(artistId).orElseThrow(() -> new InvalidArtistIdException(artistId));
 
-        List<Playlist> playlists =  this.playlistRepository.findPlaylistsWithSongsByArtist(artist)
-                .stream().map(tuple ->(Playlist) tuple.get(0)).distinct().toList();
+        List<Playlist> playlists = this.playlistRepository.findPlaylistsWithSongsByArtist(artist)
+                .stream().map(tuple -> (Playlist) tuple.get(0)).distinct().toList();
 
         return getPlaylistDTOS(playlists);
     }
@@ -103,20 +108,6 @@ public class PlaylistServiceImpl implements PlaylistService {
         List<Playlist> playlists = this.playlistRepository.getAllPlaylistsWhichArePublicAndContainMaxOfThreeSongs();
         return getPlaylistDTOS(playlists);
     }
-
-    private List<PlaylistDTO> getPlaylistDTOS(List<Playlist> playlists) {
-        List<PlaylistDTO> playlistDTOS = new ArrayList<>();
-        for (Playlist playlist : playlists) {
-            playlistDTOS.add(new PlaylistDTO(
-                    playlist.getId(),
-                    playlist.getName(),
-                    playlist.getDateCreated(),
-                    playlist.getStatusPublic(),
-                    playlist.getSongs().stream().map(Song::getId).toList()));
-        }
-        return playlistDTOS;
-    }
-
 
     @Override
     public Integer calculateTotalDurationOfPlaylist(Long id) {
@@ -136,4 +127,16 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
 
+    private List<PlaylistDTO> getPlaylistDTOS(List<Playlist> playlists) {
+        List<PlaylistDTO> playlistDTOS = new ArrayList<>();
+        for (Playlist playlist : playlists) {
+            playlistDTOS.add(new PlaylistDTO(
+                    playlist.getId(),
+                    playlist.getName(),
+                    playlist.getDateCreated(),
+                    playlist.getStatusPublic(),
+                    playlist.getSongs().stream().map(Song::getId).toList()));
+        }
+        return playlistDTOS;
+    }
 }
