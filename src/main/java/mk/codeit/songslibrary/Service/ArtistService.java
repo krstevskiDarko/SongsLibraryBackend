@@ -8,13 +8,13 @@ import java.util.Optional;
 
 public interface ArtistService {
 
-    List<Artist> getAllArtists();
+    List<ArtistDTO> getAllArtists();
 
     Optional<Artist> getArtistById(Long id);
 
     Optional<Artist> getArtistByName(String artistName);
 
-    Optional<Artist> saveArtist(ArtistDTO artist) throws Exception;
+    Optional<ArtistDTO> saveArtist(ArtistDTO artist) throws Exception;
 
     List<ArtistDTO> getMacedonianArtists();
 

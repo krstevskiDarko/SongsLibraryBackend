@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public interface SongService {
 
+    List<SongDTO> getAllSongs();
+
     Optional<Song> getSongById(Long id);
 
     Optional<SongDTO> addNewSongFromArtist(Long artistId, SongDTO song);

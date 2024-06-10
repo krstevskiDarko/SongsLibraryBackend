@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin("http://localhost:3000")
 @RequestMapping("/api/playlist")
 public class PlaylistController {
 
@@ -19,6 +20,12 @@ public class PlaylistController {
 
     public PlaylistController(PlaylistService playlistService) {
         this.playlistService = playlistService;
+    }
+
+
+    @GetMapping
+    public ResponseEntity<List<PlaylistDTO>> getAllPlaylists() {
+        return ResponseEntity.ok(this.playlistService.getAllPlaylists());
     }
 
     @PostMapping("/save")

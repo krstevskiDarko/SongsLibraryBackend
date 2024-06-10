@@ -18,6 +18,8 @@ public class SongDTO {
     private Integer durationInMinutes;
     private LocalDate releaseDate;
 
+    public SongDTO() {}
+
     public SongDTO(Long id, String title, Integer durationInMinutes, LocalDate releaseDate, Genre genre , Long artist, List<Long> playlists) {
         this.id = id;
         this.title = title;

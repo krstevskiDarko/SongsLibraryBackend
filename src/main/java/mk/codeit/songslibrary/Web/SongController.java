@@ -7,9 +7,11 @@ import mk.codeit.songslibrary.Service.SongService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
+@CrossOrigin("http://localhost:3000")
 @RequestMapping("/api/song")
 public class SongController {
 
@@ -17,6 +19,11 @@ public class SongController {
 
     public SongController(SongService songService) {
         this.songService = songService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<SongDTO>> getAllSongs() {
+        return ResponseEntity.ok(songService.getAllSongs());
     }
 
     @PostMapping("/save/{id}")
@@ -37,5 +44,10 @@ public class SongController {
     @GetMapping("/threeSongs")
     public List<SongDTO> threeSongs() {
         return this.songService.getFirstThreeSongs();
+    }
+
+    @GetMapping("/genres")
+    public List<Genre> getGenres() {
+        return Arrays.stream(Genre.values()).toList();
     }
 }

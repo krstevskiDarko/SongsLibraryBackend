@@ -27,6 +27,6 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 
     @Query("SELECT p " +
             "FROM Playlist p " +
-            "WHERE p.statusPublic = true AND SIZE(p.songs)<=3")
+            "WHERE p.statusPublic = true AND SIZE(p.songs) BETWEEN 1 and 3")
     List<Playlist> getAllPlaylistsWhichArePublicAndContainMaxOfThreeSongs();
 }

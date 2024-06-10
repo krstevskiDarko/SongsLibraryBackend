@@ -5,6 +5,7 @@ import mk.codeit.songslibrary.Model.DTO.SongDTO;
 import mk.codeit.songslibrary.Model.Enumerations.Genre;
 import mk.codeit.songslibrary.Model.Exceptions.InvalidArgumentsException;
 import mk.codeit.songslibrary.Model.Exceptions.InvalidArtistIdException;
+import mk.codeit.songslibrary.Model.Exceptions.SongsNotExisting;
 import mk.codeit.songslibrary.Model.Playlist;
 import mk.codeit.songslibrary.Model.Song;
 import mk.codeit.songslibrary.Repository.ArtistRepository;
@@ -26,6 +27,17 @@ public class SongServiceImpl implements SongService {
     public SongServiceImpl(SongRepository songRepository, ArtistRepository artistRepository) {
         this.songRepository = songRepository;
         this.artistRepository = artistRepository;
+    }
+
+    @Override
+    public List<SongDTO> getAllSongs() {
+        List<Song> songs =  this.songRepository.findAll();
+
+        List<SongDTO> songDTOs = new ArrayList<>();
+        for (Song song : songs) {
+            songDTOs.add(new SongDTO(song.getId(),song.getTitle(),song.getDurationInMinutes(),song.getReleaseDate(),song.getGenre(),song.getArtist().getId(),song.getPlaylists().stream().map(Playlist::getId).toList()));
+        }
+        return songDTOs;
     }
 
     @Override
@@ -60,6 +72,10 @@ public class SongServiceImpl implements SongService {
         Artist a = this.artistRepository.findById(artistId).orElseThrow(() -> new InvalidArtistIdException(artistId));
 
         Song s = this.songRepository.findSongByLongestDuration(a, genre);
+
+        if (s == null){
+            throw new SongsNotExisting();
+        }
 
         SongDTO songDTO = new SongDTO(
                 s.getId(),

@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface PlaylistService {
 
+    List<PlaylistDTO> getAllPlaylists();
 
     Optional<PlaylistDTO> savePlaylist(PlaylistDTO playlist);
 
