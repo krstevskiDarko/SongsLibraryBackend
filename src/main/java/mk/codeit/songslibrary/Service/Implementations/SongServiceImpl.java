@@ -5,6 +5,7 @@ import mk.codeit.songslibrary.Model.DTO.SongDTO;
 import mk.codeit.songslibrary.Model.Enumerations.Genre;
 import mk.codeit.songslibrary.Model.Exceptions.InvalidArgumentsException;
 import mk.codeit.songslibrary.Model.Exceptions.InvalidArtistIdException;
+import mk.codeit.songslibrary.Model.Exceptions.InvalidSongIdException;
 import mk.codeit.songslibrary.Model.Exceptions.SongsNotExisting;
 import mk.codeit.songslibrary.Model.Playlist;
 import mk.codeit.songslibrary.Model.Song;
@@ -106,5 +107,12 @@ public class SongServiceImpl implements SongService {
             songDTOs.add(DTO);
         }
         return songDTOs;
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        Song song = this.songRepository.findById(id).orElseThrow(() -> new InvalidSongIdException(id));
+
+        this.songRepository.delete(song);
     }
 }
