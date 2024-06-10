@@ -50,4 +50,9 @@ public class SongController {
     public List<Genre> getGenres() {
         return Arrays.stream(Genre.values()).toList();
     }
+
+    @DeleteMapping("/delete/{id}")
+    public void deleteSong(@PathVariable Long id) {
+        this.songService.deleteById(id);
+    }
 }

@@ -18,4 +18,6 @@ public interface SongService {
     Optional<SongDTO> getSongByLongestDurationFromArtist(Long artistId, Genre genre);
 
     List<SongDTO> getFirstThreeSongs();
+
+    void deleteById(Long id);
 }
