@@ -12,17 +12,15 @@ import java.util.List;
 
 @Data
 public class PlaylistDTO {
-    @Id
-    @GeneratedValue
+
     private Long id;
     private String name;
     private LocalDate dateCreated;
     private Boolean statusPublic;
     private List<Long> songs;
 
-    public PlaylistDTO(){}
-
-    public PlaylistDTO(String name, LocalDate dateCreated, Boolean statusPublic, List<Long> songs) {
+    public PlaylistDTO(Long id,String name, LocalDate dateCreated, Boolean statusPublic, List<Long> songs) {
+        this.id = id;
         this.name = name;
         this.dateCreated = dateCreated;
         this.statusPublic = statusPublic;
