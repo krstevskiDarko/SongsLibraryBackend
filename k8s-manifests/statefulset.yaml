@@ -15,7 +15,7 @@ metadata:
   namespace: namespace-songs
 type: Opaque
 data:
-  POSTGRES_PASSWORD: a2lpaTEyMw==  # Base64 encoded "kiii123"
+  POSTGRES_PASSWORD: a2lpaTEyMw==
 ---
 
 apiVersion: apps/v1
