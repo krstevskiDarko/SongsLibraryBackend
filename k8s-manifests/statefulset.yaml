@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-config
+  namespace: namespace-songs
+data:
+  POSTGRES_DB: "kiii"
+  POSTGRES_USER: "kiii"
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+  namespace: namespace-songs
+type: Opaque
+data:
+  POSTGRES_PASSWORD: a2lpaTEyMw==  # Base64 encoded "kiii123"
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kiii-db
+  namespace: namespace-songs
+spec:
+  serviceName: kiii-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kiii-db
+  template:
+    metadata:
+      labels:
+        app: kiii-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: db-config
+            - secretRef:
+                name: db-secret
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: pgdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi
